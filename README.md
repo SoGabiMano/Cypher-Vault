@@ -1,5 +1,20 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Estrutura do código
+
+| Pasta | Uso |
+|--------|-----|
+| `app/` | Rotas App Router |
+| `components/` | UI reutilizável |
+| `lib/ciphers/` | Implementações puras das cifras |
+| `types/` | Tipos compartilhados (ex.: `cipher.ts`) |
+
+Imports com alias `@/` apontam para a raiz do repositório (`tsconfig.json` → `paths`: `"@/*": ["./*"]`). Exemplo:
+
+```ts
+import { PlaceholderNotice } from "@/components/PlaceholderNotice"
+```
+
 ## Getting Started
 
 First, run the development server:
