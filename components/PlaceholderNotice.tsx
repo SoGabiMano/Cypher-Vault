@@ -3,7 +3,7 @@ import type { CipherMetadata } from "@/types/cipher";
 type PlaceholderNoticeProps = {
   /** Texto curto para smoke test de imports `@/components`. */
   title: string;
-  /** Opcional: amarra `types/cipher` ao UI até as cifras existirem. */
+  /** Opcional: amarra `types/cipher` ao UI até o registry existir. */
   sampleCipher?: CipherMetadata;
 };
 
@@ -18,7 +18,7 @@ export function PlaceholderNotice({
         <>
           {" "}
           <span className="font-mono text-zinc-600 dark:text-zinc-400">
-            ({sampleCipher.label} · {sampleCipher.id})
+            ({sampleCipher.name} · {sampleCipher.id})
           </span>
         </>
       ) : null}
