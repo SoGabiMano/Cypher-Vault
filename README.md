@@ -9,7 +9,11 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 | `lib/ciphers/` | Implementações puras das cifras |
 | `types/` | Tipos compartilhados (ex.: `cipher.ts`) |
 
-Imports com alias `@/` apontam para a raiz do repositório (`tsconfig.json` → `paths`: `"@/*": ["./*"]`).
+Imports com alias `@/` apontam para a raiz do repositório (`tsconfig.json` → `paths`: `"@/*": ["./*"]`). Exemplo:
+
+```ts
+import { PlaceholderNotice } from "@/components/PlaceholderNotice"
+```
 
 ## Getting Started
 

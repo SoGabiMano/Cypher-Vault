@@ -4,7 +4,7 @@
  */
 export type CipherId = string;
 
-export interface CipherMetadata {
+export type CipherMetadata = {
   id: CipherId;
   label: string;
-}
+};
