@@ -11,7 +11,7 @@ describe("PlaceholderNotice", () => {
     render(
       <PlaceholderNotice
         title="Cifra"
-        sampleCipher={{ id: "demo", label: "Demonstração" }}
+        sampleCipher={{ id: "demo", name: "Demonstração" }}
       />,
     );
     expect(screen.getByText(/Demonstração/)).toBeInTheDocument();
