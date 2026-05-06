@@ -65,7 +65,7 @@ export function parseCaesarParams(raw: unknown): CaesarParams {
 }
 
 /** César apenas sobre A–Z / a–z; demais code points são preservados. */
-export const caesarCipher: CipherDefinition<CaesarParams> = {
+export const caesarCipher = {
   id: "caesar",
   name: "Caesar",
   paramFields: [
@@ -81,4 +81,4 @@ export const caesarCipher: CipherDefinition<CaesarParams> = {
   encode: (plainText, params) => transform(plainText, params.shift, false),
   decode: (cipherText, params) => transform(cipherText, params.shift, true),
   parseParams: parseCaesarParams,
-};
+} as const satisfies CipherDefinition<CaesarParams>;
