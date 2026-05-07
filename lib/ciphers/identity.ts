@@ -1,7 +1,7 @@
 import type { CipherDefinition, EmptyCipherParams } from "@/types/cipher";
 
 /** Cifra identidade: útil para testes de registry e smoke de imports `lib/ciphers/*`. */
-export const identityCipher: CipherDefinition<EmptyCipherParams> = {
+export const identityCipher = {
   id: "identity",
   name: "Identity",
   paramFields: [],
@@ -13,4 +13,4 @@ export const identityCipher: CipherDefinition<EmptyCipherParams> = {
     void params;
     return cipherText;
   },
-};
+} as const satisfies CipherDefinition<EmptyCipherParams>;
