@@ -2,6 +2,7 @@ import type { CipherDefinition } from "@/types/cipher";
 import { atbashCipher } from "./atbash";
 import { caesarCipher } from "./caesar";
 import { identityCipher } from "./identity";
+import { morseCipher } from "./morse";
 
 type EnsureUniqueIds<
   T extends readonly { readonly id: string }[],
@@ -30,10 +31,12 @@ function defineCipherRegistry<const T extends readonly CipherDefinition<unknown>
   return ciphers;
 }
 
+<<<<<<< HEAD
 export const cipherRegistry = defineCipherRegistry(
   atbashCipher,
   caesarCipher,
   identityCipher,
+  morseCipher,
 );
 
 const cipherById: ReadonlyMap<string, CipherDefinition<unknown>> = (() => {
