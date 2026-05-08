@@ -59,6 +59,10 @@ function isMorseLikeToken(token: string): boolean {
   return true;
 }
 
+function escapeLiteralToken(token: string): string {
+  return `\\${token}`;
+}
+
 function encodeWord(word: string): string {
   const tokens: string[] = [];
   for (const ch of word) {
@@ -66,6 +70,11 @@ function encodeWord(word: string): string {
     const morse = MORSE_BY_CHAR[key];
     if (morse !== undefined) {
       tokens.push(morse);
+      continue;
+    }
+    // Disambiguate literal characters that would otherwise be parsed as morse.
+    if (ch === "." || ch === "-" || ch === "/") {
+      tokens.push(escapeLiteralToken(ch));
       continue;
     }
     tokens.push(ch);
@@ -124,6 +133,13 @@ function tokenizeMorseInput(input: string): readonly Token[] {
     }
     if (isWhitespaceChar(ch)) {
       flushBuffer();
+      // Tabs/newlines should behave like word separators (tolerant decode).
+      if (ch !== " ") {
+        flushWhitespace();
+        tokens.push({ kind: "wordSep" });
+        whitespaceCount = 0;
+        continue;
+      }
       whitespaceCount += 1;
       continue;
     }
@@ -152,6 +168,15 @@ export function decodeMorse(cipherText: string): string {
     }
 
     const token = part.value;
+    if (token.startsWith("\\") && token.length >= 2) {
+      const literal = token.slice(1);
+      if (pendingSpace) {
+        out += " ";
+        pendingSpace = false;
+      }
+      out += literal;
+      continue;
+    }
     const decoded = CHAR_BY_MORSE[token];
     if (decoded !== undefined) {
       if (pendingSpace) {
