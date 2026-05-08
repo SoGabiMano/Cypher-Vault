@@ -3,9 +3,9 @@ import { atbashCipher } from "./atbash";
 import { caesarCipher } from "./caesar";
 import { identityCipher } from "./identity";
 import { morseCipher } from "./morse";
+import { vigenereCipher } from "./vigenere";
 
-export const cipherRegistry = [atbashCipher, caesarCipher, identityCipher, morseCipher] as const;
-
+export const cipherRegistry = [atbashCipher, caesarCipher, identityCipher, morseCipher, vigenereCipher] as const;
 const cipherById: ReadonlyMap<string, CipherDefinition<unknown>> = (() => {
   const map = new Map<string, CipherDefinition<unknown>>();
   for (const def of cipherRegistry) {
