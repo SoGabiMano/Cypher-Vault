@@ -17,7 +17,7 @@ import { PlaceholderNotice } from "@/components/PlaceholderNotice"
 
 ## Contribuição
 
-- Guia para adicionar nova cifra: [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md)
+- Como adicionar uma nova cifra: [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md)
 
 ## Getting Started
 

@@ -1,61 +1,79 @@
 # Contribuindo com novas cifras
 
-Este guia descreve o fluxo completo para adicionar uma nova cifra em `lib/ciphers/`, incluindo contrato de tipos, testes, registro no `cipherRegistry` e ajustes de UI quando houver novos parametros.
+Este guia descreve o fluxo completo para adicionar uma nova cifra em `lib/ciphers/`, incluindo contrato de tipos, testes, registro no `cipherRegistry` e ajustes de UI quando houver novos parâmetros.
 
-## Visao geral
+**Índice**
+
+- [Visão geral](#visao-geral)
+- [Pré-requisitos](#pre-requisitos)
+- [Checklist](#checklist)
+- [Exemplo](#exemplo)
+- [Critérios](#criterios)
+
+<a id="visao-geral"></a>
+
+## Visão geral
 
 Cada cifra precisa:
 
 - Implementar o contrato `CipherDefinition<P>` de `types/cipher.ts`.
-- Expor `id` unico, `name`, `paramFields`, `encode` e `decode`.
+- Expor `id` único, `name`, `paramFields`, `encode` e `decode`.
 - Opcionalmente implementar `parseParams` para validar entrada crua com `CipherValidationError`.
 - Ser registrada em `lib/ciphers/registry.ts`.
 - Ter testes para parser e comportamento da cifra.
 
-## Pre-requisitos
+<a id="pre-requisitos"></a>
+
+## Pré-requisitos
 
 Antes de implementar:
 
-1. Leia `types/cipher.ts` e confirme o tipo de parametros `P` da sua cifra.
-2. Defina `id` estavel (slug sem espacos), usado por registry e por fluxos de UI.
-3. Planeje os `paramFields` para refletirem exatamente os parametros aceitos por `parseParams`.
-4. Se a cifra nao tiver parametros, use `EmptyCipherParams` e `paramFields: []`.
+1. Leia `types/cipher.ts` e confirme o tipo de parâmetros `P` da sua cifra.
+2. Defina `id` estável (slug sem espaços), usado por registry e por fluxos de UI.
+3. Planeje os `paramFields` para refletirem exatamente os parâmetros aceitos por `parseParams`.
+4. Se a cifra não tiver parâmetros, use `EmptyCipherParams` e `paramFields: []`.
 
-## Passo a passo (checklist)
+<a id="checklist"></a>
+
+## Checklist
 
 1. Crie `lib/ciphers/<nome-da-cifra>.ts` exportando:
-   - tipo de parametros (ex.: `MyCipherParams`);
+   - tipo de parâmetros (ex.: `MyCipherParams`);
    - parser (ex.: `parseMyCipherParams(raw: unknown)`);
    - objeto `myCipher` com `satisfies CipherDefinition<MyCipherParams>`.
-2. Implemente `encode` e `decode` como funcoes puras (sem estado global, sem I/O).
-3. Se houver parametros, valide em `parseParams` com erros previsiveis via `CipherValidationError`.
-4. Adicione os metadados de formulario em `paramFields` (`kind`, `key`, `label`, regras).
+2. Implemente `encode` e `decode` como funções puras (sem estado global, sem I/O).
+3. Se houver parâmetros, valide em `parseParams` com erros previsíveis via `CipherValidationError`.
+4. Adicione os metadados de formulário em `paramFields` (`kind`, `key`, `label`, regras).
 5. Registre a cifra em `lib/ciphers/registry.ts` dentro de `defineCipherRegistry(...)`.
 6. Exporte a cifra em `lib/ciphers/index.ts`.
 7. Crie testes em `lib/ciphers/<nome-da-cifra>.test.ts` cobrindo:
-   - parser aceitando entrada valida;
-   - parser rejeitando entradas invalidas;
-   - roundtrip (`decode(encode(texto)) === texto`) quando aplicavel.
-8. Se a cifra introduzir novos parametros ou comportamento de entrada, valide impacto na UI de parametros dinamicos (CV-013), garantindo que os `paramFields` sejam suficientes para renderizar/validar o formulario.
-9. Rode verificacoes locais:
+   - parser aceitando entrada válida;
+   - parser rejeitando entradas inválidas;
+   - roundtrip (`decode(encode(texto)) === texto`) quando aplicável.
+8. Se a cifra introduzir novos parâmetros ou comportamento de entrada, valide impacto na UI de parâmetros dinâmicos (CV-013), garantindo que os `paramFields` sejam suficientes para renderizar/validar o formulário.
+9. Rode verificações locais:
    - `npm run lint`
    - `npm run typecheck`
    - `npm run format:check`
 
-## Exemplo pratico (referencia: Caesar)
+<a id="exemplo"></a>
+
+## Exemplo prático (Caesar)
 
 Use `lib/ciphers/caesar.ts` como modelo:
 
 - `CaesarParams` define `{ shift: number }`.
-- `parseCaesarParams` valida objeto, presenca de `shift`, numero finito e inteiro.
-- `paramFields` declara um campo numerico obrigatorio com `integer: true`.
-- `encode` e `decode` reutilizam uma funcao interna pura (`transform`).
+- `parseCaesarParams` valida objeto, presença de `shift`, número finito e inteiro.
+- `paramFields` declara um campo numérico obrigatório com `integer: true`.
+- `encode` e `decode` reutilizam uma função interna pura (`transform`).
 
-E valide o padrao de teste em `lib/ciphers/caesar.test.ts`.
+E valide o padrão de teste em `lib/ciphers/caesar.test.ts`.
 
-## Criterios de pronto para PR
+<a id="criterios"></a>
+
+## Critérios de pronto para PR
 
 - Nova cifra aparece em `getAllCiphers()` e `getCipherById("<id>")`.
-- IDs no registry continuam unicos.
+- IDs no registry continuam únicos.
 - Testes da cifra e do registry permanecem verdes.
-- Documentacao e nomes seguem o padrao existente do projeto.
+- Documentação e nomes seguem o padrão existente do projeto.
