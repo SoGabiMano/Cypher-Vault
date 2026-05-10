@@ -24,7 +24,8 @@ type DuplicateId<
     : never
   : never;
 
-function defineCipherRegistry<const T extends readonly CipherDefinition<unknown>[]>(
+/** `any` nos params permite misturar cifras com tipos de parâmetro distintos no mesmo registry. */
+function defineCipherRegistry<const T extends readonly CipherDefinition<any>[]>(
   ...ciphers: EnsureUniqueIds<T> & T
 ): T {
   return ciphers;
@@ -36,8 +37,8 @@ export const cipherRegistry = defineCipherRegistry(
   identityCipher,
 );
 
-const cipherById: ReadonlyMap<string, CipherDefinition<unknown>> = (() => {
-  const map = new Map<string, CipherDefinition<unknown>>();
+const cipherById: ReadonlyMap<string, CipherDefinition<any>> = (() => {
+  const map = new Map<string, CipherDefinition<any>>();
   for (const def of cipherRegistry) {
     if (map.has(def.id)) {
       throw new Error(`Duplicate cipher id detected: "${def.id}"`);
@@ -47,11 +48,11 @@ const cipherById: ReadonlyMap<string, CipherDefinition<unknown>> = (() => {
   return map;
 })();
 
-export function getAllCiphers(): readonly CipherDefinition<unknown>[] {
+export function getAllCiphers(): typeof cipherRegistry {
   return cipherRegistry;
 }
 
-export function getCipherById(id: string): CipherDefinition<unknown> | undefined {
+export function getCipherById(id: string): CipherDefinition<any> | undefined {
   return cipherById.get(id);
 }
 
