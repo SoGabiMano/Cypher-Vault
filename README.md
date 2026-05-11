@@ -36,13 +36,17 @@ npm run lint
 npm run typecheck
 npm run format
 npm run format:check
+npm test
 
 # (alternativa)
 pnpm lint
 pnpm typecheck
 pnpm format
 pnpm format:check
+pnpm test
 ```
+
+Testes unitários (Jest): a suíte das cifras fica em `lib/ciphers/*.test.ts` (demais testes em `**/*.test.ts` na raiz). Para modo watch: `npm run test:watch` ou `pnpm test:watch`.
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 

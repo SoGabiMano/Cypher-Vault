@@ -28,6 +28,13 @@ describe("caesarCipher", () => {
     expect(caesarCipher.decode(enc, params)).toBe(plain);
   });
 
+  it("exemplo do documento (César): DEV com shift 3 -> GHY e roundtrip", () => {
+    const params = { shift: 3 };
+    const enc = caesarCipher.encode("DEV", params);
+    expect(enc).toBe("GHY");
+    expect(caesarCipher.decode(enc, params)).toBe("DEV");
+  });
+
   it("parseParams está disponível na definição", () => {
     expect(caesarCipher.parseParams).toBe(parseCaesarParams);
   });

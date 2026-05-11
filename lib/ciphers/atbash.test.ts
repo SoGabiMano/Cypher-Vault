@@ -8,7 +8,7 @@ describe("atbashCipher", () => {
     expect(atbashCipher.decode(enc, undefined)).toBe(plain);
   });
 
-  it("exemplo do documento: HELLO -> SVOOL (encode = decode)", () => {
+  it("exemplo cypher-vault-ideia (Atbash): HELLO -> SVOOL (encode = decode)", () => {
     expect(atbashCipher.encode("HELLO", undefined)).toBe("SVOOL");
     expect(atbashCipher.decode("HELLO", undefined)).toBe("SVOOL");
   });

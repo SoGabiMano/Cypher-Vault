@@ -29,7 +29,7 @@ describe("parseVigenereParams", () => {
 });
 
 describe("vigenereCipher", () => {
-  it("CODE + KEY -> MSBO", () => {
+  it("exemplo cypher-vault-ideia (Vigenère): CODE + KEY -> MSBO", () => {
     const params = { key: "KEY" };
     expect(vigenereCipher.encode("CODE", params)).toBe("MSBO");
     expect(vigenereCipher.decode("MSBO", params)).toBe("CODE");
