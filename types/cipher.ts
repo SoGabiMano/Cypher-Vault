@@ -21,8 +21,12 @@
 
 export type CipherId = string;
 
-/** Cifra sem parâmetros configuráveis (omitir o segundo argumento nas chamadas). */
-export type EmptyCipherParams = void;
+/**
+ * Cifra sem parâmetros configuráveis em runtime (`paramFields` vazio).
+ * Usamos `unknown` (e não `void`) para ser compatível com registros tipados como
+ * {@link CipherDefinition} widened para `unknown` sem conflito de parâmetros em `encode`/`decode`.
+ */
+export type EmptyCipherParams = unknown;
 
 /** Metadados mínimos para listas / placeholders de UI. */
 export type CipherMetadata = {
