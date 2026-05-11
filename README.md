@@ -15,6 +15,10 @@ Imports com alias `@/` apontam para a raiz do repositório (`tsconfig.json` → 
 import { PlaceholderNotice } from "@/components/PlaceholderNotice"
 ```
 
+## Contribuição
+
+- Como adicionar uma nova cifra: [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md)
+
 ## Getting Started
 
 First, run the development server:

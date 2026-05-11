@@ -3,7 +3,7 @@ import { cipherRegistry, getAllCiphers, getCipherById } from "./registry";
 describe("cipherRegistry", () => {
   it("lista todas as cifras do MVP", () => {
     const ids = cipherRegistry.map((c) => c.id).sort();
-    expect(ids).toEqual(["atbash", "caesar", "identity"]);
+    expect(ids).toEqual(["atbash", "caesar", "identity", "morse", "vigenere"]);
   });
 
   it("getAllCiphers expõe a mesma lista", () => {
@@ -13,6 +13,7 @@ describe("cipherRegistry", () => {
   it("getCipherById retorna definição ou undefined", () => {
     expect(getCipherById("caesar")?.id).toBe("caesar");
     expect(getCipherById("identity")?.id).toBe("identity");
+    expect(getCipherById("vigenere")?.id).toBe("vigenere");
     expect(getCipherById("missing")).toBeUndefined();
   });
 
