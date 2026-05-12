@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { getAllCiphers } from "@/lib/ciphers";
+import { applyCipherSelectionChange } from "./applyCipherSelectionChange";
 import { CipherWorkspace } from "./CipherWorkspace";
 
 describe("CipherWorkspace", () => {
@@ -84,17 +85,23 @@ describe("CipherWorkspace", () => {
     expect(screen.getByLabelText("Resultado")).toHaveValue("ABC DEF");
   });
 
-  it("reseta os parâmetros ao trocar a cifra", () => {
-    render(<CipherWorkspace />);
-
-    const paramsState = screen.getByTestId("cipher-params-state");
-    const ciphers = getAllCiphers();
-    const nextCipher = ciphers[1] ?? ciphers[0];
-
-    fireEvent.change(screen.getByLabelText("Cifra"), {
-      target: { value: nextCipher.id },
+  describe("troca de cifra", () => {
+    it("zera parâmetros previamente preenchidos", () => {
+      expect(
+        applyCipherSelectionChange(
+          { selectedCipherId: "atbash", cipherParams: { shift: 3 } },
+          "caesar",
+        ),
+      ).toEqual({
+        selectedCipherId: "caesar",
+        cipherParams: {},
+      });
     });
 
-    expect(paramsState).toHaveAttribute("data-params", "{}");
+    it("mantém o estado quando a cifra selecionada não muda", () => {
+      const state = { selectedCipherId: "caesar", cipherParams: { shift: 3 } };
+
+      expect(applyCipherSelectionChange(state, "caesar")).toBe(state);
+    });
   });
 });

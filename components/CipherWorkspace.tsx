@@ -1,6 +1,7 @@
 "use client";
 
 import { CipherSelector } from "@/components/CipherSelector";
+import { applyCipherSelectionChange } from "@/components/applyCipherSelectionChange";
 import { getAllCiphers } from "@/lib/ciphers";
 import { useState, type ChangeEvent } from "react";
 
@@ -26,8 +27,12 @@ export function CipherWorkspace() {
   const isSelectorDisabled = ciphers.length === 0;
 
   const handleCipherChange = (nextId: string) => {
-    setSelectedCipherId(nextId);
-    setCipherParams({});
+    const next = applyCipherSelectionChange(
+      { selectedCipherId, cipherParams },
+      nextId,
+    );
+    setSelectedCipherId(next.selectedCipherId);
+    setCipherParams(next.cipherParams);
   };
 
   const handleEncode = () => {
@@ -54,11 +59,6 @@ export function CipherWorkspace() {
           value={selectedCipherId}
           onChange={handleCipherChange}
           disabled={isSelectorDisabled}
-        />
-        <div
-          data-testid="cipher-params-state"
-          data-params={JSON.stringify(cipherParams)}
-          hidden
         />
       </div>
 

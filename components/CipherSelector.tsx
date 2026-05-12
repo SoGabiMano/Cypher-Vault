@@ -1,13 +1,14 @@
 "use client";
 
 import type { CipherMetadata } from "@/types/cipher";
-import type { ChangeEvent } from "react";
+import { useId, type ChangeEvent } from "react";
 
 type CipherSelectorProps = {
   ciphers: readonly CipherMetadata[];
   value: string;
   onChange: (id: string) => void;
   disabled?: boolean;
+  selectId?: string;
 };
 
 export function CipherSelector({
@@ -15,7 +16,10 @@ export function CipherSelector({
   value,
   onChange,
   disabled = false,
+  selectId: selectIdProp,
 }: CipherSelectorProps) {
+  const generatedId = useId();
+  const selectId = selectIdProp ?? generatedId;
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     onChange(event.target.value);
   };
@@ -23,13 +27,13 @@ export function CipherSelector({
   return (
     <div className="flex flex-col gap-2">
       <label
-        htmlFor="cipher-selector"
+        htmlFor={selectId}
         className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
       >
         Cifra
       </label>
       <select
-        id="cipher-selector"
+        id={selectId}
         value={value}
         onChange={handleChange}
         disabled={disabled}

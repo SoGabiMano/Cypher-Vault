@@ -78,4 +78,37 @@ describe("CipherSelector", () => {
 
     expect(screen.getByLabelText("Cifra")).toBeDisabled();
   });
+
+  it("gera ids únicos por instância quando selectId não é informado", () => {
+    render(
+      <>
+        <CipherSelector
+          ciphers={sampleCiphers}
+          value="alpha"
+          onChange={() => {}}
+        />
+        <CipherSelector
+          ciphers={sampleCiphers}
+          value="beta"
+          onChange={() => {}}
+        />
+      </>,
+    );
+
+    const [selectA, selectB] = screen.getAllByLabelText("Cifra");
+    expect(selectA.id).not.toBe(selectB.id);
+  });
+
+  it("aceita selectId definido pelo pai", () => {
+    render(
+      <CipherSelector
+        ciphers={sampleCiphers}
+        value="alpha"
+        onChange={() => {}}
+        selectId="cipher-selector"
+      />,
+    );
+
+    expect(screen.getByLabelText("Cifra")).toHaveAttribute("id", "cipher-selector");
+  });
 });
