@@ -2,7 +2,7 @@ import { CipherValidationError } from "@/types/cipher";
 import { decodeMorse, encodeMorse, morseCipher } from "./morse";
 
 describe("morseCipher", () => {
-  it("encode SOS e decode retorna lowercase", () => {
+  it("exemplo cypher-vault-ideia (Morse): SOS -> ... --- ...; decode retorna lowercase", () => {
     const enc = morseCipher.encode("SOS", undefined);
     expect(enc).toBe("... --- ...");
     expect(morseCipher.decode(enc, undefined)).toBe("sos");
