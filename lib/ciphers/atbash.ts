@@ -44,7 +44,15 @@ function transform(text: string): string {
 export const atbashCipher = {
   id: "atbash",
   name: "Atbash",
-  paramFields: [],
+  paramFields: [
+    {
+      kind: "help",
+      key: "atbash-info",
+      label: "Parâmetros",
+      description:
+        "Esta cifra não usa parâmetros. Apenas letras latinas A–Z e a–z são espelhadas; demais caracteres permanecem iguais. Codificar e decodificar são a mesma operação.",
+    },
+  ],
   encode: (plainText, params) => {
     void params;
     return transform(plainText);

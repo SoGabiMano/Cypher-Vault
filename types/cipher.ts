@@ -7,7 +7,8 @@
  * - `name`: rótulo curto para UI.
  * - `paramFields`: descrição **em runtime** dos campos de parâmetro para formulário
  *   dinâmico (CV-013). Deve refletir o tipo `P` (ex.: campo `shift` quando
- *   `P` é `{ shift: number }`). Cifras sem parâmetros usam array vazio.
+ *   `P` é `{ shift: number }`). Cifras sem parâmetros editáveis usam array vazio ou
+ *   apenas entradas `kind: "help"` (texto informativo, fora de `parseParams`).
  * - `encode(plainText, params)` / `decode(cipherText, params)`: funções puras;
  *   o mesmo `params` é usado nos dois sentidos.
  *
@@ -64,7 +65,15 @@ export type CipherParamFieldString = CipherParamFieldBase & {
   readonly pattern?: string;
 };
 
-export type CipherParamField = CipherParamFieldNumber | CipherParamFieldString;
+/** Texto só de leitura no formulário; não participa de `cipherParams` nem de `parseParams`. */
+export type CipherParamFieldHelp = {
+  readonly kind: "help";
+  readonly key: string;
+  readonly label: string;
+  readonly description: string;
+};
+
+export type CipherParamField = CipherParamFieldNumber | CipherParamFieldString | CipherParamFieldHelp;
 
 // --- Erros de validação previsíveis ---
 
