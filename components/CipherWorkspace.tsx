@@ -1,6 +1,11 @@
 "use client";
 
+import { CipherSelector } from "@/components/CipherSelector";
+import { applyCipherSelectionChange } from "@/components/applyCipherSelectionChange";
+import { getAllCiphers } from "@/lib/ciphers";
 import { useState, type ChangeEvent } from "react";
+
+const ciphers = getAllCiphers();
 
 function mockEncode(value: string) {
   return value.toUpperCase();
@@ -11,10 +16,24 @@ function mockDecode(value: string) {
 }
 
 export function CipherWorkspace() {
+  const [selectedCipherId, setSelectedCipherId] = useState(
+    () => ciphers[0]?.id ?? "",
+  );
+  const [cipherParams, setCipherParams] = useState<Record<string, unknown>>({});
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
 
   const isActionDisabled = inputText.trim().length === 0;
+  const isSelectorDisabled = ciphers.length === 0;
+
+  const handleCipherChange = (nextId: string) => {
+    const next = applyCipherSelectionChange(
+      { selectedCipherId, cipherParams },
+      nextId,
+    );
+    setSelectedCipherId(next.selectedCipherId);
+    setCipherParams(next.cipherParams);
+  };
 
   const handleEncode = () => {
     setOutputText(mockEncode(inputText));
@@ -34,6 +53,15 @@ export function CipherWorkspace() {
 
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
+      <div className="mb-4 flex flex-col gap-4">
+        <CipherSelector
+          ciphers={ciphers}
+          value={selectedCipherId}
+          onChange={handleCipherChange}
+          disabled={isSelectorDisabled}
+        />
+      </div>
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="flex flex-col gap-2">
           <label

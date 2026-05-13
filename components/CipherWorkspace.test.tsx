@@ -1,4 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import { getAllCiphers } from "@/lib/ciphers";
+import { applyCipherSelectionChange } from "./applyCipherSelectionChange";
 import { CipherWorkspace } from "./CipherWorkspace";
 
 describe("CipherWorkspace", () => {
@@ -54,5 +56,52 @@ describe("CipherWorkspace", () => {
 
     fireEvent.change(input, { target: { value: "   \t" } });
     expect(screen.getByLabelText("Resultado")).toHaveValue("");
+  });
+
+  it("lista todas as cifras do registry no seletor", () => {
+    render(<CipherWorkspace />);
+
+    const expectedNames = getAllCiphers().map((cipher) => cipher.name);
+    const options = screen.getAllByRole("option");
+
+    expect(options).toHaveLength(expectedNames.length);
+    expect(options.map((option) => option.textContent)).toEqual(expectedNames);
+  });
+
+  it("mantém o comportamento mock de Codificar após trocar a cifra", () => {
+    render(<CipherWorkspace />);
+
+    const ciphers = getAllCiphers();
+    const nextCipher = ciphers[1] ?? ciphers[0];
+
+    fireEvent.change(screen.getByLabelText("Cifra"), {
+      target: { value: nextCipher.id },
+    });
+    fireEvent.change(screen.getByLabelText("Texto de entrada"), {
+      target: { value: "abc def" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Codificar" }));
+
+    expect(screen.getByLabelText("Resultado")).toHaveValue("ABC DEF");
+  });
+
+  describe("troca de cifra", () => {
+    it("zera parâmetros previamente preenchidos", () => {
+      expect(
+        applyCipherSelectionChange(
+          { selectedCipherId: "atbash", cipherParams: { shift: 3 } },
+          "caesar",
+        ),
+      ).toEqual({
+        selectedCipherId: "caesar",
+        cipherParams: {},
+      });
+    });
+
+    it("mantém o estado quando a cifra selecionada não muda", () => {
+      const state = { selectedCipherId: "caesar", cipherParams: { shift: 3 } };
+
+      expect(applyCipherSelectionChange(state, "caesar")).toBe(state);
+    });
   });
 });
