@@ -115,6 +115,9 @@ export type CipherParamsParseResult<P> =
 /**
  * Estreita o retorno de `parseParams` para {@link CipherParamsParseResult}
  * sem `as`: discrimina por `ok` e valida `value` / instância de {@link CipherValidationError}.
+ * Se `ok === false` mas `error` não for {@link CipherValidationError}, devolve `false`
+ * (valor inválido para o contrato); o agregador do resultado cru deve tratar esse caso
+ * explicitamente.
  */
 export function isCipherParamsParseResult<P = unknown>(
   value: unknown,

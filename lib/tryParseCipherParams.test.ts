@@ -32,4 +32,22 @@ describe("tryParseCipherParams", () => {
       expect(out.errors["*"]).toMatch(/Não foi possível concluir/);
     }
   });
+
+  it("trata { ok: false, error } inválido como falha (não como params)", () => {
+    const def: CipherDefinition<unknown> = {
+      id: "bad-result",
+      name: "Bad result",
+      paramFields: [],
+      encode: (t) => t,
+      decode: (t) => t,
+      parseParams: () =>
+        ({ ok: false, error: new Error("not a CipherValidationError") }) as never,
+    };
+
+    const out = tryParseCipherParams(def, {});
+    expect(out.ok).toBe(false);
+    if (!out.ok) {
+      expect(out.errors["*"]).toMatch(/Não foi possível concluir/);
+    }
+  });
 });

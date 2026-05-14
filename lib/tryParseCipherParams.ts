@@ -29,6 +29,13 @@ export function tryParseCipherParams(
       }
       return { ok: true, params: out.value };
     }
+    // `ok: false` sem `error` tipado como CipherValidationError falha em
+    // `isCipherParamsParseResult`, mas ainda deve ser tratado como falha.
+    if (out !== null && typeof out === "object" && Reflect.get(out, "ok") === false) {
+      const err = Reflect.get(out, "error");
+      const field = isCipherValidationError(err) ? (err.field ?? "*") : "*";
+      return { ok: false, errors: { [field]: format(err) } };
+    }
     return { ok: true, params: out };
   } catch (e) {
     if (isCipherValidationError(e)) {

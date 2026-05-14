@@ -67,23 +67,14 @@ export function CipherWorkspace() {
     setTransformError(undefined);
   };
 
-  const runEncode = () => {
+  const runTransform = (direction: "encode" | "decode") => {
     if (!selectedDefinition) return;
     setTransformError(undefined);
     try {
-      const out = selectedDefinition.encode(inputText, parsedParams);
-      setOutputText(out);
-    } catch (e) {
-      setOutputText("");
-      setTransformError(formatCipherError(e));
-    }
-  };
-
-  const runDecode = () => {
-    if (!selectedDefinition) return;
-    setTransformError(undefined);
-    try {
-      const out = selectedDefinition.decode(inputText, parsedParams);
+      const out =
+        direction === "encode"
+          ? selectedDefinition.encode(inputText, parsedParams)
+          : selectedDefinition.decode(inputText, parsedParams);
       setOutputText(out);
     } catch (e) {
       setOutputText("");
@@ -170,7 +161,7 @@ export function CipherWorkspace() {
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <button
           type="button"
-          onClick={runEncode}
+          onClick={() => runTransform("encode")}
           disabled={isActionDisabled}
           className="inline-flex w-full items-center justify-center rounded-xl bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300 sm:w-auto"
         >
@@ -178,7 +169,7 @@ export function CipherWorkspace() {
         </button>
         <button
           type="button"
-          onClick={runDecode}
+          onClick={() => runTransform("decode")}
           disabled={isActionDisabled}
           className="inline-flex w-full items-center justify-center rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-900 transition hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 sm:w-auto"
         >
