@@ -105,8 +105,8 @@ export const vigenereCipher = {
     {
       kind: "string",
       key: "key",
-      label: "Key",
-      description: "Alphabetic keyword (A–Z). Case-insensitive.",
+      label: "Palavra-chave",
+      description: "Apenas letras A–Z (maiúsculas ou minúsculas).",
       required: true,
       minLength: 1,
       pattern: "^[A-Za-z]+$",

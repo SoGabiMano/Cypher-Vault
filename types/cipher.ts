@@ -7,7 +7,8 @@
  * - `name`: rótulo curto para UI.
  * - `paramFields`: descrição **em runtime** dos campos de parâmetro para formulário
  *   dinâmico (CV-013). Deve refletir o tipo `P` (ex.: campo `shift` quando
- *   `P` é `{ shift: number }`). Cifras sem parâmetros usam array vazio.
+ *   `P` é `{ shift: number }`). Cifras sem parâmetros editáveis usam array vazio ou
+ *   apenas entradas `kind: "help"` (texto informativo, fora de `parseParams`).
  * - `encode(plainText, params)` / `decode(cipherText, params)`: funções puras;
  *   o mesmo `params` é usado nos dois sentidos.
  *
@@ -64,7 +65,15 @@ export type CipherParamFieldString = CipherParamFieldBase & {
   readonly pattern?: string;
 };
 
-export type CipherParamField = CipherParamFieldNumber | CipherParamFieldString;
+/** Texto só de leitura no formulário; não participa de `cipherParams` nem de `parseParams`. */
+export type CipherParamFieldHelp = {
+  readonly kind: "help";
+  readonly key: string;
+  readonly label: string;
+  readonly description: string;
+};
+
+export type CipherParamField = CipherParamFieldNumber | CipherParamFieldString | CipherParamFieldHelp;
 
 // --- Erros de validação previsíveis ---
 
@@ -98,6 +107,26 @@ export function isCipherValidationError(value: unknown): value is CipherValidati
 export type CipherParamsParseResult<P> =
   | { readonly ok: true; readonly value: P }
   | { readonly ok: false; readonly error: CipherValidationError };
+
+/**
+ * Estreita o retorno de `parseParams` para {@link CipherParamsParseResult}
+ * sem `as`: discrimina por `ok` e valida `value` / instância de {@link CipherValidationError}.
+ */
+export function isCipherParamsParseResult<P = unknown>(
+  value: unknown,
+): value is CipherParamsParseResult<P> {
+  if (value === null || typeof value !== "object") {
+    return false;
+  }
+  const okTag = Reflect.get(value, "ok");
+  if (okTag === true) {
+    return Reflect.has(value, "value");
+  }
+  if (okTag === false) {
+    return isCipherValidationError(Reflect.get(value, "error"));
+  }
+  return false;
+}
 
 // --- Definição de cifra ---
 

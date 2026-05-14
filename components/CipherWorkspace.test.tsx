@@ -72,7 +72,8 @@ describe("CipherWorkspace", () => {
     render(<CipherWorkspace />);
 
     const ciphers = getAllCiphers();
-    const nextCipher = ciphers[1] ?? ciphers[0];
+    const nextCipher =
+      ciphers.find((c) => c.id === "identity") ?? ciphers.find((c) => c.id === "morse") ?? ciphers[0];
 
     fireEvent.change(screen.getByLabelText("Cifra"), {
       target: { value: nextCipher.id },
@@ -103,5 +104,42 @@ describe("CipherWorkspace", () => {
 
       expect(applyCipherSelectionChange(state, "caesar")).toBe(state);
     });
+  });
+
+  it("exibe texto de ajuda da cifra Atbash (primeira do registry) como nota", () => {
+    render(<CipherWorkspace />);
+    const first = getAllCiphers()[0];
+    expect(first?.id).toBe("atbash");
+    expect(screen.getByRole("note", { name: "Parâmetros" })).toBeInTheDocument();
+  });
+
+  it("exige deslocamento na César antes de habilitar Codificar com texto", () => {
+    render(<CipherWorkspace />);
+
+    fireEvent.change(screen.getByLabelText("Cifra"), { target: { value: "caesar" } });
+    fireEvent.change(screen.getByLabelText("Texto de entrada"), {
+      target: { value: "abc" },
+    });
+
+    expect(screen.getByRole("button", { name: "Codificar" })).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText(/Deslocamento/), { target: { value: "1" } });
+    expect(screen.getByRole("button", { name: "Codificar" })).not.toBeDisabled();
+  });
+
+  it("após trocar de César para Vigenère, parâmetros são limpos e palavra-chave volta a ser obrigatória", () => {
+    render(<CipherWorkspace />);
+
+    fireEvent.change(screen.getByLabelText("Cifra"), { target: { value: "caesar" } });
+    fireEvent.change(screen.getByLabelText(/Deslocamento/), { target: { value: "3" } });
+    fireEvent.change(screen.getByLabelText("Texto de entrada"), {
+      target: { value: "abc" },
+    });
+    expect(screen.getByRole("button", { name: "Codificar" })).not.toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Cifra"), { target: { value: "vigenere" } });
+    expect(screen.queryByLabelText(/Deslocamento/)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/Palavra-chave/)).toHaveValue("");
+    expect(screen.getByRole("button", { name: "Codificar" })).toBeDisabled();
   });
 });

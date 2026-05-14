@@ -1,9 +1,15 @@
 "use client";
 
+import { CipherParamsForm } from "@/components/CipherParamsForm";
 import { CipherSelector } from "@/components/CipherSelector";
 import { applyCipherSelectionChange } from "@/components/applyCipherSelectionChange";
-import { getAllCiphers } from "@/lib/ciphers";
-import { useState, type ChangeEvent } from "react";
+import { getAllCiphers, getCipherById } from "@/lib/ciphers";
+import {
+  isCipherParamsParseResult,
+  isCipherValidationError,
+  type CipherDefinition,
+} from "@/types/cipher";
+import { useMemo, useState, type ChangeEvent } from "react";
 
 const ciphers = getAllCiphers();
 
@@ -15,6 +21,33 @@ function mockDecode(value: string) {
   return value.toLowerCase();
 }
 
+function tryParseCipherParams(
+  definition: CipherDefinition<unknown> | undefined,
+  raw: Record<string, unknown>,
+): { ok: true } | { ok: false; errors: Record<string, string> } {
+  if (!definition?.parseParams) {
+    return { ok: true };
+  }
+  try {
+    const out = definition.parseParams(raw);
+    if (isCipherParamsParseResult(out)) {
+      if (!out.ok) {
+        const e = out.error;
+        const field = e.field ?? "*";
+        return { ok: false, errors: { [field]: e.message } };
+      }
+      return { ok: true };
+    }
+    return { ok: true };
+  } catch (e) {
+    if (isCipherValidationError(e)) {
+      const field = e.field ?? "*";
+      return { ok: false, errors: { [field]: e.message } };
+    }
+    throw e;
+  }
+}
+
 export function CipherWorkspace() {
   const [selectedCipherId, setSelectedCipherId] = useState(
     () => ciphers[0]?.id ?? "",
@@ -23,8 +56,21 @@ export function CipherWorkspace() {
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
 
-  const isActionDisabled = inputText.trim().length === 0;
   const isSelectorDisabled = ciphers.length === 0;
+
+  const selectedDefinition = useMemo(
+    () => getCipherById(selectedCipherId),
+    [selectedCipherId],
+  );
+
+  const { isParamsValid, paramErrors } = useMemo(() => {
+    const result = tryParseCipherParams(selectedDefinition, cipherParams);
+    return result.ok
+      ? { isParamsValid: true as const, paramErrors: undefined }
+      : { isParamsValid: false as const, paramErrors: result.errors };
+  }, [selectedDefinition, cipherParams]);
+
+  const isActionDisabled = inputText.trim().length === 0 || !isParamsValid;
 
   const handleCipherChange = (nextId: string) => {
     const next = applyCipherSelectionChange(
@@ -33,6 +79,18 @@ export function CipherWorkspace() {
     );
     setSelectedCipherId(next.selectedCipherId);
     setCipherParams(next.cipherParams);
+  };
+
+  const handleParamChange = (key: string, value: unknown) => {
+    setCipherParams((prev) => {
+      const next = { ...prev };
+      if (value === undefined || value === "") {
+        delete next[key];
+      } else {
+        next[key] = value;
+      }
+      return next;
+    });
   };
 
   const handleEncode = () => {
@@ -51,6 +109,8 @@ export function CipherWorkspace() {
     }
   };
 
+  const paramFields = selectedDefinition?.paramFields ?? [];
+
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
       <div className="mb-4 flex flex-col gap-4">
@@ -60,6 +120,14 @@ export function CipherWorkspace() {
           onChange={handleCipherChange}
           disabled={isSelectorDisabled}
         />
+        {paramFields.length > 0 ? (
+          <CipherParamsForm
+            paramFields={paramFields}
+            value={cipherParams}
+            onParamChange={handleParamChange}
+            errors={paramErrors}
+          />
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

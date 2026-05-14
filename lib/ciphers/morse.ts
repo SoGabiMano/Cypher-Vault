@@ -207,7 +207,15 @@ export function decodeMorse(cipherText: string): string {
 export const morseCipher = {
   id: "morse",
   name: "Morse",
-  paramFields: [],
+  paramFields: [
+    {
+      kind: "help",
+      key: "morse-separators",
+      label: "Separadores na decodificação",
+      description:
+        "Na saída codificada, letras da mesma palavra são separadas por um espaço; palavras diferentes por \" / \". Na decodificação, \"/\" marca fim de palavra; dois ou mais espaços ou quebras de linha/tab também separam palavras; um único espaço entre símbolos . e - pertence ao mesmo caractere.",
+    },
+  ],
   encode: (plainText, params) => {
     void params;
     return encodeMorse(plainText);

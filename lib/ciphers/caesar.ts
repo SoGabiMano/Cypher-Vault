@@ -72,8 +72,8 @@ export const caesarCipher = {
     {
       kind: "number",
       key: "shift",
-      label: "Shift",
-      description: "Integer rotation for Latin letters A–Z and a–z.",
+      label: "Deslocamento",
+      description: "Rotação inteira para letras latinas A–Z e a–z; demais caracteres são preservados.",
       required: true,
       integer: true,
     },
