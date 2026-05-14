@@ -52,6 +52,7 @@ describe("morseCipher", () => {
     } catch (err: unknown) {
       const e = err as CipherValidationError;
       expect(e.code).toBe("MALFORMED_INPUT_DATA");
+      expect(e.detail).toBe("..-.-");
     }
   });
 });

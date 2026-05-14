@@ -1,4 +1,4 @@
-import { cipherRegistry, getAllCiphers, getCipherById } from "./registry";
+import { cipherRegistry, getAllCiphers, getCipherById, getCiphersForSelector } from "./registry";
 
 describe("cipherRegistry", () => {
   it("lista todas as cifras do MVP", () => {
@@ -15,6 +15,14 @@ describe("cipherRegistry", () => {
     expect(getCipherById("identity")?.id).toBe("identity");
     expect(getCipherById("vigenere")?.id).toBe("vigenere");
     expect(getCipherById("missing")).toBeUndefined();
+  });
+
+  it("getCiphersForSelector exclui cifras só para testes", () => {
+    const ids = getCiphersForSelector()
+      .map((c) => c.id)
+      .sort();
+    expect(ids).toEqual(["atbash", "caesar", "morse", "vigenere"]);
+    expect(getAllCiphers().map((c) => c.id)).toContain("identity");
   });
 
   it("ids são únicos", () => {

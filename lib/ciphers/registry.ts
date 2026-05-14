@@ -40,6 +40,9 @@ export const cipherRegistry = defineCipherRegistry(
   vigenereCipher,
 );
 
+/** Ids de cifras só para testes/registry; não aparecem no seletor da UI. */
+const SELECTOR_EXCLUDED_IDS = new Set<string>(["identity"]);
+
 const cipherById: ReadonlyMap<string, CipherDefinition<unknown>> = (() => {
   const map = new Map<string, CipherDefinition<unknown>>();
   for (const def of cipherRegistry) {
@@ -53,6 +56,11 @@ const cipherById: ReadonlyMap<string, CipherDefinition<unknown>> = (() => {
 
 export function getAllCiphers(): readonly CipherDefinition<unknown>[] {
   return cipherRegistry as unknown as readonly CipherDefinition<unknown>[];
+}
+
+/** Lista para o seletor da app (exclui helpers como Identity). */
+export function getCiphersForSelector(): readonly CipherDefinition<unknown>[] {
+  return getAllCiphers().filter((c) => !SELECTOR_EXCLUDED_IDS.has(c.id));
 }
 
 export function getCipherById(id: string): CipherDefinition<unknown> | undefined {

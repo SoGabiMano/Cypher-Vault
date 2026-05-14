@@ -191,6 +191,7 @@ export function decodeMorse(cipherText: string): string {
       throw new CipherValidationError('Malformed morse token in input.', {
         code: "MALFORMED_INPUT_DATA",
         field: "*",
+        detail: token,
       });
     }
 
