@@ -5,9 +5,9 @@ import { CipherSelector } from "@/components/CipherSelector";
 import { applyCipherSelectionChange } from "@/components/applyCipherSelectionChange";
 import { getAllCiphers, getCipherById } from "@/lib/ciphers";
 import {
+  isCipherParamsParseResult,
   isCipherValidationError,
   type CipherDefinition,
-  type CipherParamsParseResult,
 } from "@/types/cipher";
 import { useMemo, useState, type ChangeEvent } from "react";
 
@@ -30,10 +30,9 @@ function tryParseCipherParams(
   }
   try {
     const out = definition.parseParams(raw);
-    if (out !== null && typeof out === "object" && "ok" in out) {
-      const r = out as CipherParamsParseResult<unknown>;
-      if (!r.ok) {
-        const e = r.error;
+    if (isCipherParamsParseResult(out)) {
+      if (!out.ok) {
+        const e = out.error;
         const field = e.field ?? "*";
         return { ok: false, errors: { [field]: e.message } };
       }

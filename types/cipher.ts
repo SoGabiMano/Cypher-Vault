@@ -108,6 +108,26 @@ export type CipherParamsParseResult<P> =
   | { readonly ok: true; readonly value: P }
   | { readonly ok: false; readonly error: CipherValidationError };
 
+/**
+ * Estreita o retorno de `parseParams` para {@link CipherParamsParseResult}
+ * sem `as`: discrimina por `ok` e valida `value` / instância de {@link CipherValidationError}.
+ */
+export function isCipherParamsParseResult<P = unknown>(
+  value: unknown,
+): value is CipherParamsParseResult<P> {
+  if (value === null || typeof value !== "object") {
+    return false;
+  }
+  const okTag = Reflect.get(value, "ok");
+  if (okTag === true) {
+    return Reflect.has(value, "value");
+  }
+  if (okTag === false) {
+    return isCipherValidationError(Reflect.get(value, "error"));
+  }
+  return false;
+}
+
 // --- Definição de cifra ---
 
 export type CipherDefinition<P = EmptyCipherParams> = {

@@ -58,6 +58,42 @@ describe("CipherParamsForm", () => {
     expect(input).toHaveValue(null);
   });
 
+  it("preserva '-' como estado intermediário para deslocamento negativo", () => {
+    const onParamChange = jest.fn();
+    const paramFields: readonly CipherParamField[] = [
+      {
+        kind: "number",
+        key: "shift",
+        label: "Deslocamento",
+        required: true,
+        integer: true,
+      },
+    ];
+    const { rerender } = render(
+      <CipherParamsForm
+        paramFields={paramFields}
+        value={{ shift: "-" }}
+        onParamChange={onParamChange}
+      />,
+    );
+    const input = screen.getByLabelText(/Deslocamento/) as HTMLInputElement;
+    expect(input.type).toBe("text");
+    expect(input.value).toBe("-");
+
+    fireEvent.change(input, { target: { value: "-3" } });
+    expect(onParamChange).toHaveBeenCalledWith("shift", -3);
+
+    rerender(
+      <CipherParamsForm
+        paramFields={paramFields}
+        value={{ shift: -3 }}
+        onParamChange={onParamChange}
+      />,
+    );
+    expect(input.type).toBe("number");
+    expect(input).toHaveValue(-3);
+  });
+
   it("renderiza campo texto e notifica mudanças", () => {
     const paramFields: readonly CipherParamField[] = [
       {

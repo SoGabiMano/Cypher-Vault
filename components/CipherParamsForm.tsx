@@ -17,6 +17,12 @@ function inputErrorClass(hasError: boolean): string {
   return hasError ? " border-red-500 dark:border-red-500" : "";
 }
 
+/** Lista ids para `aria-describedby` (descrição + erro); omitir atributo se vazio. */
+function ariaDescribedByIds(...ids: (string | undefined)[]): string | undefined {
+  const parts = ids.filter((id): id is string => id !== undefined && id.length > 0);
+  return parts.length > 0 ? parts.join(" ") : undefined;
+}
+
 export function CipherParamsForm({
   paramFields,
   value,
@@ -47,14 +53,17 @@ export function CipherParamsForm({
 
         if (field.kind === "number") {
           const raw = value[field.key];
+          const isDraftString = typeof raw === "string";
           const display =
             raw === undefined || raw === null
               ? ""
               : typeof raw === "number" && Number.isFinite(raw)
                 ? String(raw)
                 : String(raw);
-          const describedBy =
-            field.description !== undefined ? `${fieldId}-desc` : undefined;
+          const describedBy = ariaDescribedByIds(
+            field.description !== undefined ? `${fieldId}-desc` : undefined,
+            fieldError !== undefined ? `${fieldId}-err` : undefined,
+          );
 
           return (
             <div key={field.key} className="flex flex-col gap-1">
@@ -74,31 +83,38 @@ export function CipherParamsForm({
               ) : null}
               <input
                 id={fieldId}
-                type="number"
+                type={isDraftString ? "text" : "number"}
+                inputMode={
+                  isDraftString ? (field.integer === false ? "decimal" : "numeric") : undefined
+                }
                 aria-invalid={Boolean(fieldError)}
                 aria-describedby={describedBy}
                 required={field.required}
-                min={field.min}
-                max={field.max}
-                step={field.integer === false ? "any" : "1"}
+                min={isDraftString ? undefined : field.min}
+                max={isDraftString ? undefined : field.max}
+                step={isDraftString ? undefined : field.integer === false ? "any" : "1"}
                 value={display}
                 onChange={(event) => {
                   const s = event.target.value;
-                  if (s === "" || s === "-") {
+                  if (s === "") {
                     onParamChange(field.key, undefined);
                     return;
                   }
                   const n = Number(s);
-                  if (!Number.isFinite(n)) {
-                    onParamChange(field.key, undefined);
+                  if (Number.isFinite(n)) {
+                    onParamChange(field.key, n);
                     return;
                   }
-                  onParamChange(field.key, n);
+                  onParamChange(field.key, s);
                 }}
                 className={inputClassName + inputErrorClass(Boolean(fieldError))}
               />
               {fieldError !== undefined ? (
-                <p className="text-xs text-red-600 dark:text-red-400" role="alert">
+                <p
+                  id={`${fieldId}-err`}
+                  className="text-xs text-red-600 dark:text-red-400"
+                  role="alert"
+                >
                   {fieldError}
                 </p>
               ) : null}
@@ -109,8 +125,10 @@ export function CipherParamsForm({
         const strVal = value[field.key];
         const strDisplay =
           strVal === undefined || strVal === null ? "" : String(strVal);
-        const strDescribedBy =
-          field.description !== undefined ? `${fieldId}-desc-str` : undefined;
+        const strDescribedBy = ariaDescribedByIds(
+          field.description !== undefined ? `${fieldId}-desc-str` : undefined,
+          fieldError !== undefined ? `${fieldId}-err` : undefined,
+        );
 
         return (
           <div key={field.key} className="flex flex-col gap-1">
@@ -143,7 +161,11 @@ export function CipherParamsForm({
               className={inputClassName + inputErrorClass(Boolean(fieldError))}
             />
             {fieldError !== undefined ? (
-              <p className="text-xs text-red-600 dark:text-red-400" role="alert">
+              <p
+                id={`${fieldId}-err`}
+                className="text-xs text-red-600 dark:text-red-400"
+                role="alert"
+              >
                 {fieldError}
               </p>
             ) : null}
