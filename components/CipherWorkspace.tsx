@@ -3,71 +3,43 @@
 import { CipherParamsForm } from "@/components/CipherParamsForm";
 import { CipherSelector } from "@/components/CipherSelector";
 import { applyCipherSelectionChange } from "@/components/applyCipherSelectionChange";
-import { getAllCiphers, getCipherById } from "@/lib/ciphers";
-import {
-  isCipherParamsParseResult,
-  isCipherValidationError,
-  type CipherDefinition,
-} from "@/types/cipher";
+import { getCipherById, getCiphersForSelector } from "@/lib/ciphers";
+import { formatCipherError } from "@/lib/formatCipherError";
+import { tryParseCipherParams } from "@/lib/tryParseCipherParams";
 import { useMemo, useState, type ChangeEvent } from "react";
 
-const ciphers = getAllCiphers();
-
-function mockEncode(value: string) {
-  return value.toUpperCase();
-}
-
-function mockDecode(value: string) {
-  return value.toLowerCase();
-}
-
-function tryParseCipherParams(
-  definition: CipherDefinition<unknown> | undefined,
-  raw: Record<string, unknown>,
-): { ok: true } | { ok: false; errors: Record<string, string> } {
-  if (!definition?.parseParams) {
-    return { ok: true };
-  }
-  try {
-    const out = definition.parseParams(raw);
-    if (isCipherParamsParseResult(out)) {
-      if (!out.ok) {
-        const e = out.error;
-        const field = e.field ?? "*";
-        return { ok: false, errors: { [field]: e.message } };
-      }
-      return { ok: true };
-    }
-    return { ok: true };
-  } catch (e) {
-    if (isCipherValidationError(e)) {
-      const field = e.field ?? "*";
-      return { ok: false, errors: { [field]: e.message } };
-    }
-    throw e;
-  }
-}
+const selectorCiphers = getCiphersForSelector();
 
 export function CipherWorkspace() {
   const [selectedCipherId, setSelectedCipherId] = useState(
-    () => ciphers[0]?.id ?? "",
+    () => selectorCiphers[0]?.id ?? "",
   );
   const [cipherParams, setCipherParams] = useState<Record<string, unknown>>({});
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
+  const [transformError, setTransformError] = useState<string | undefined>();
 
-  const isSelectorDisabled = ciphers.length === 0;
+  const isSelectorDisabled = selectorCiphers.length === 0;
 
   const selectedDefinition = useMemo(
     () => getCipherById(selectedCipherId),
     [selectedCipherId],
   );
 
-  const { isParamsValid, paramErrors } = useMemo(() => {
+  const { isParamsValid, paramErrors, parsedParams } = useMemo(() => {
     const result = tryParseCipherParams(selectedDefinition, cipherParams);
-    return result.ok
-      ? { isParamsValid: true as const, paramErrors: undefined }
-      : { isParamsValid: false as const, paramErrors: result.errors };
+    if (!result.ok) {
+      return {
+        isParamsValid: false as const,
+        paramErrors: result.errors,
+        parsedParams: undefined,
+      };
+    }
+    return {
+      isParamsValid: true as const,
+      paramErrors: undefined,
+      parsedParams: result.params,
+    };
   }, [selectedDefinition, cipherParams]);
 
   const isActionDisabled = inputText.trim().length === 0 || !isParamsValid;
@@ -79,6 +51,7 @@ export function CipherWorkspace() {
     );
     setSelectedCipherId(next.selectedCipherId);
     setCipherParams(next.cipherParams);
+    setTransformError(undefined);
   };
 
   const handleParamChange = (key: string, value: unknown) => {
@@ -91,19 +64,37 @@ export function CipherWorkspace() {
       }
       return next;
     });
+    setTransformError(undefined);
   };
 
-  const handleEncode = () => {
-    setOutputText(mockEncode(inputText));
+  const runEncode = () => {
+    if (!selectedDefinition) return;
+    setTransformError(undefined);
+    try {
+      const out = selectedDefinition.encode(inputText, parsedParams);
+      setOutputText(out);
+    } catch (e) {
+      setOutputText("");
+      setTransformError(formatCipherError(e));
+    }
   };
 
-  const handleDecode = () => {
-    setOutputText(mockDecode(inputText));
+  const runDecode = () => {
+    if (!selectedDefinition) return;
+    setTransformError(undefined);
+    try {
+      const out = selectedDefinition.decode(inputText, parsedParams);
+      setOutputText(out);
+    } catch (e) {
+      setOutputText("");
+      setTransformError(formatCipherError(e));
+    }
   };
 
   const handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const next = event.target.value;
     setInputText(next);
+    setTransformError(undefined);
     if (next.trim().length === 0) {
       setOutputText("");
     }
@@ -115,7 +106,7 @@ export function CipherWorkspace() {
     <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
       <div className="mb-4 flex flex-col gap-4">
         <CipherSelector
-          ciphers={ciphers}
+          ciphers={selectorCiphers}
           value={selectedCipherId}
           onChange={handleCipherChange}
           disabled={isSelectorDisabled}
@@ -129,6 +120,16 @@ export function CipherWorkspace() {
           />
         ) : null}
       </div>
+
+      {transformError !== undefined ? (
+        <p
+          className="mb-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-200"
+          role="alert"
+          aria-live="assertive"
+        >
+          {transformError}
+        </p>
+      ) : null}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="flex flex-col gap-2">
@@ -169,7 +170,7 @@ export function CipherWorkspace() {
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <button
           type="button"
-          onClick={handleEncode}
+          onClick={runEncode}
           disabled={isActionDisabled}
           className="inline-flex w-full items-center justify-center rounded-xl bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300 sm:w-auto"
         >
@@ -177,7 +178,7 @@ export function CipherWorkspace() {
         </button>
         <button
           type="button"
-          onClick={handleDecode}
+          onClick={runDecode}
           disabled={isActionDisabled}
           className="inline-flex w-full items-center justify-center rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-900 transition hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 sm:w-auto"
         >

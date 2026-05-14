@@ -1,5 +1,15 @@
+/**
+ * Checklist manual CV-014 (colar na descrição da PR):
+ * - Entrada vazia ou só espaços: botões desativados, sem erro de transformação.
+ * - César sem deslocamento com texto: botões desativados.
+ * - César com deslocamento não inteiro ou inválido: mensagem de erro no campo (PT).
+ * - Vigenère com chave vazia ou com dígitos/símbolos: mensagem no campo (PT).
+ * - Morse: decodificar "..-.-" mostra alerta com trecho problemático em PT.
+ * - Após erro de transformação, trocar de cifra ou editar entrada/params: alerta some.
+ * - Happy path: Atbash com "abc", César com shift 1, Morse roundtrip "SOS".
+ */
 import { render, screen, fireEvent } from "@testing-library/react";
-import { getAllCiphers } from "@/lib/ciphers";
+import { getAllCiphers, getCiphersForSelector } from "@/lib/ciphers";
 import { applyCipherSelectionChange } from "./applyCipherSelectionChange";
 import { CipherWorkspace } from "./CipherWorkspace";
 
@@ -26,22 +36,23 @@ describe("CipherWorkspace", () => {
     expect(screen.getByRole("button", { name: "Decodificar" })).toBeDisabled();
   });
 
-  it("Codificar coloca o resultado em maiúsculas", () => {
+  it("Codificar aplica a cifra Atbash (primeira do registry)", () => {
     render(<CipherWorkspace />);
+    expect(getAllCiphers()[0]?.id).toBe("atbash");
     fireEvent.change(screen.getByLabelText("Texto de entrada"), {
       target: { value: "abc def" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Codificar" }));
-    expect(screen.getByLabelText("Resultado")).toHaveValue("ABC DEF");
+    expect(screen.getByLabelText("Resultado")).toHaveValue("zyx wvu");
   });
 
-  it("Decodificar coloca o resultado em minúsculas", () => {
+  it("Decodificar aplica Atbash (mesma operação que codificar)", () => {
     render(<CipherWorkspace />);
     fireEvent.change(screen.getByLabelText("Texto de entrada"), {
       target: { value: "ABC DEF" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Decodificar" }));
-    expect(screen.getByLabelText("Resultado")).toHaveValue("abc def");
+    expect(screen.getByLabelText("Resultado")).toHaveValue("ZYX WVU");
   });
 
   it("limpa o resultado quando a entrada fica vazia ou só com espaços após trim", () => {
@@ -49,7 +60,7 @@ describe("CipherWorkspace", () => {
     const input = screen.getByLabelText("Texto de entrada");
     fireEvent.change(input, { target: { value: "hi" } });
     fireEvent.click(screen.getByRole("button", { name: "Codificar" }));
-    expect(screen.getByLabelText("Resultado")).toHaveValue("HI");
+    expect(screen.getByLabelText("Resultado")).toHaveValue("sr");
 
     fireEvent.change(input, { target: { value: "" } });
     expect(screen.getByLabelText("Resultado")).toHaveValue("");
@@ -58,32 +69,47 @@ describe("CipherWorkspace", () => {
     expect(screen.getByLabelText("Resultado")).toHaveValue("");
   });
 
-  it("lista todas as cifras do registry no seletor", () => {
+  it("lista no seletor só cifras visíveis (sem Identity; Identity permanece no registry)", () => {
     render(<CipherWorkspace />);
 
-    const expectedNames = getAllCiphers().map((cipher) => cipher.name);
+    expect(getAllCiphers().some((c) => c.id === "identity")).toBe(true);
+    expect(getCiphersForSelector().some((c) => c.id === "identity")).toBe(false);
+
+    const expectedNames = getCiphersForSelector().map((cipher) => cipher.name);
     const options = screen.getAllByRole("option");
 
     expect(options).toHaveLength(expectedNames.length);
     expect(options.map((option) => option.textContent)).toEqual(expectedNames);
+    expect(screen.queryByRole("option", { name: "Identity" })).not.toBeInTheDocument();
   });
 
-  it("mantém o comportamento mock de Codificar após trocar a cifra", () => {
+  it("exibe erro em português ao decodificar Morse inválido", () => {
     render(<CipherWorkspace />);
 
-    const ciphers = getAllCiphers();
-    const nextCipher =
-      ciphers.find((c) => c.id === "identity") ?? ciphers.find((c) => c.id === "morse") ?? ciphers[0];
-
-    fireEvent.change(screen.getByLabelText("Cifra"), {
-      target: { value: nextCipher.id },
-    });
+    fireEvent.change(screen.getByLabelText("Cifra"), { target: { value: "morse" } });
     fireEvent.change(screen.getByLabelText("Texto de entrada"), {
-      target: { value: "abc def" },
+      target: { value: "..-.-" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Codificar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Decodificar" }));
 
-    expect(screen.getByLabelText("Resultado")).toHaveValue("ABC DEF");
+    const alert = screen.getByRole("alert");
+    expect(alert.textContent).toMatch(/interpretada/i);
+    expect(alert.textContent).toContain("..-.-");
+    expect(screen.getByLabelText("Resultado")).toHaveValue("");
+  });
+
+  it("remove o alerta de transformação ao trocar de cifra", () => {
+    render(<CipherWorkspace />);
+
+    fireEvent.change(screen.getByLabelText("Cifra"), { target: { value: "morse" } });
+    fireEvent.change(screen.getByLabelText("Texto de entrada"), {
+      target: { value: "..-.-" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Decodificar" }));
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Cifra"), { target: { value: "atbash" } });
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   describe("troca de cifra", () => {

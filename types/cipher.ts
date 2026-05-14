@@ -81,6 +81,8 @@ export type CipherValidationErrorOptions = {
   readonly code?: string;
   readonly field?: string;
   readonly cause?: unknown;
+  /** Contexto extra para a UI (ex.: token Morse inválido). */
+  readonly detail?: string;
 };
 
 /**
@@ -90,12 +92,14 @@ export type CipherValidationErrorOptions = {
 export class CipherValidationError extends Error {
   readonly code: string;
   readonly field?: string;
+  readonly detail?: string;
 
   constructor(message: string, options?: CipherValidationErrorOptions) {
     super(message, options?.cause !== undefined ? { cause: options.cause } : undefined);
     this.name = "CipherValidationError";
     this.code = options?.code ?? "CIPHER_VALIDATION";
     this.field = options?.field;
+    this.detail = options?.detail;
   }
 }
 
