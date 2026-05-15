@@ -28,7 +28,7 @@ export function CipherSelector({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={selectId}
-        className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+        className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
       >
         Cifra
       </label>
@@ -37,7 +37,7 @@ export function CipherSelector({
         value={value}
         onChange={handleChange}
         disabled={disabled}
-        className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-950 dark:focus-visible:ring-zinc-500 sm:max-w-md"
+        className="min-h-11 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100 dark:focus-visible:ring-zinc-300 dark:focus-visible:ring-offset-zinc-900 sm:max-w-md"
       >
         {ciphers.map((cipher) => (
           <option key={cipher.id} value={cipher.id}>

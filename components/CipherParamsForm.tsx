@@ -11,7 +11,7 @@ export type CipherParamsFormProps = {
 };
 
 const inputClassName =
-  "w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:focus-visible:ring-zinc-500 sm:max-w-md";
+  "min-h-11 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100 dark:focus-visible:ring-zinc-300 dark:focus-visible:ring-offset-zinc-900 sm:max-w-md";
 
 function inputErrorClass(hasError: boolean): string {
   return hasError ? " border-red-500 dark:border-red-500" : "";
@@ -38,12 +38,12 @@ export function CipherParamsForm({
           return (
             <div
               key={field.key}
-              className="rounded-xl border border-zinc-200 bg-zinc-50/80 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950/50"
+              className="rounded-xl border border-zinc-300 bg-zinc-50/90 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-950/80"
               role="note"
               aria-label={field.label}
             >
               <p className="font-medium text-zinc-800 dark:text-zinc-200">{field.label}</p>
-              <p className="mt-1 text-zinc-600 dark:text-zinc-400">{field.description}</p>
+              <p className="mt-1 text-zinc-700 dark:text-zinc-300">{field.description}</p>
             </div>
           );
         }
@@ -69,15 +69,15 @@ export function CipherParamsForm({
             <div key={field.key} className="flex flex-col gap-1">
               <label
                 htmlFor={fieldId}
-                className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
               >
                 {field.label}
                 {field.required ? (
-                  <span className="text-red-600 dark:text-red-400"> *</span>
+                  <span className="text-red-700 dark:text-red-300"> *</span>
                 ) : null}
               </label>
               {field.description !== undefined ? (
-                <p id={`${fieldId}-desc`} className="text-xs text-zinc-500 dark:text-zinc-400">
+                <p id={`${fieldId}-desc`} className="text-xs text-zinc-600 dark:text-zinc-300">
                   {field.description}
                 </p>
               ) : null}
@@ -112,8 +112,9 @@ export function CipherParamsForm({
               {fieldError !== undefined ? (
                 <p
                   id={`${fieldId}-err`}
-                  className="text-xs text-red-600 dark:text-red-400"
+                  className="text-xs text-red-800 dark:text-red-300"
                   role="alert"
+                  aria-live="polite"
                 >
                   {fieldError}
                 </p>
@@ -134,15 +135,15 @@ export function CipherParamsForm({
           <div key={field.key} className="flex flex-col gap-1">
             <label
               htmlFor={fieldId}
-              className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
             >
               {field.label}
               {field.required ? (
-                <span className="text-red-600 dark:text-red-400"> *</span>
+                <span className="text-red-700 dark:text-red-300"> *</span>
               ) : null}
             </label>
             {field.description !== undefined ? (
-              <p id={`${fieldId}-desc-str`} className="text-xs text-zinc-500 dark:text-zinc-400">
+              <p id={`${fieldId}-desc-str`} className="text-xs text-zinc-600 dark:text-zinc-300">
                 {field.description}
               </p>
             ) : null}
@@ -163,8 +164,9 @@ export function CipherParamsForm({
             {fieldError !== undefined ? (
               <p
                 id={`${fieldId}-err`}
-                className="text-xs text-red-600 dark:text-red-400"
+                className="text-xs text-red-800 dark:text-red-300"
                 role="alert"
+                aria-live="polite"
               >
                 {fieldError}
               </p>
@@ -173,7 +175,7 @@ export function CipherParamsForm({
         );
       })}
       {errors?.["*"] !== undefined ? (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+        <p className="text-sm text-red-800 dark:text-red-300" role="alert" aria-live="polite">
           {errors["*"]}
         </p>
       ) : null}
