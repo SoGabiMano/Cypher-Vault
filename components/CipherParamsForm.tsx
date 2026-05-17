@@ -113,7 +113,6 @@ export function CipherParamsForm({
                 <p
                   id={`${fieldId}-err`}
                   className="text-xs text-red-800 dark:text-red-300"
-                  role="alert"
                   aria-live="polite"
                 >
                   {fieldError}
@@ -165,7 +164,6 @@ export function CipherParamsForm({
               <p
                 id={`${fieldId}-err`}
                 className="text-xs text-red-800 dark:text-red-300"
-                role="alert"
                 aria-live="polite"
               >
                 {fieldError}
