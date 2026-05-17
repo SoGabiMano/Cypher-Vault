@@ -7,6 +7,15 @@
  * - Morse: decodificar "..-.-" mostra alerta com trecho problemático em PT.
  * - Após erro de transformação, trocar de cifra ou editar entrada/params: alerta some.
  * - Happy path: Atbash com "abc", César com shift 1, Morse roundtrip "SOS".
+ *
+ * Checklist manual CV-016 — viewports / contraste / a11y (colar na descrição da PR):
+ * - 320×568 e 375×667: sem scroll horizontal; padding legível; botões full-width empilhados.
+ * - 768×1024: grid entrada/resultado em duas colunas; formulário e textareas usam largura sem overflow.
+ * - 1024×768+: max-width do conteúdo coerente; foco visível ao Tab em select, inputs, textareas e botões.
+ * - Tema claro e escuro: subtítulo do header e textos de ajuda legíveis; alerta de erro de transformação legível.
+ * - Tab order: Cifra → parâmetros → entrada → resultado → Codificar → Decodificar (sem tabIndex positivo).
+ * - Erro Morse "..-.-" anunciado (assertive no workspace); erros de campo com aria-live polite onde aplicável.
+ * - `html lang="pt-BR"` e rótulos em PT conferidos no inspetor / leitor de tela.
  */
 import { render, screen, fireEvent } from "@testing-library/react";
 import { getAllCiphers, getCiphersForSelector } from "@/lib/ciphers";

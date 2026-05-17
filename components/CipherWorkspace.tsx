@@ -94,7 +94,7 @@ export function CipherWorkspace() {
   const paramFields = selectedDefinition?.paramFields ?? [];
 
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
+    <section className="min-w-0 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
       <div className="mb-4 flex flex-col gap-4">
         <CipherSelector
           ciphers={selectorCiphers}
@@ -114,7 +114,7 @@ export function CipherWorkspace() {
 
       {transformError !== undefined ? (
         <p
-          className="mb-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-200"
+          className="mb-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900 dark:border-red-800 dark:bg-red-950 dark:text-red-100"
           role="alert"
           aria-live="assertive"
         >
@@ -122,11 +122,11 @@ export function CipherWorkspace() {
         </p>
       ) : null}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="flex flex-col gap-2">
           <label
             htmlFor="cipher-input"
-            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
           >
             Texto de entrada
           </label>
@@ -135,14 +135,14 @@ export function CipherWorkspace() {
             value={inputText}
             onChange={handleInputChange}
             placeholder="Digite o texto para codificar ou decodificar..."
-            className="min-h-44 w-full resize-y rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:focus-visible:ring-zinc-500"
+            className="min-h-44 w-full min-w-0 resize-y rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100 dark:focus-visible:ring-zinc-300 dark:focus-visible:ring-offset-zinc-900"
           />
         </div>
 
         <div className="flex flex-col gap-2">
           <label
             htmlFor="cipher-output"
-            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
           >
             Resultado
           </label>
@@ -153,7 +153,7 @@ export function CipherWorkspace() {
             aria-live="polite"
             aria-atomic="true"
             placeholder="O resultado aparecerá aqui."
-            className="min-h-44 w-full resize-y rounded-xl border border-zinc-300 bg-zinc-50 px-3 py-2 text-sm outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:focus-visible:ring-zinc-500"
+            className="min-h-44 w-full min-w-0 resize-y rounded-xl border border-zinc-300 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 outline-none transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100 dark:focus-visible:ring-zinc-300 dark:focus-visible:ring-offset-zinc-900"
           />
         </div>
       </div>
@@ -163,7 +163,7 @@ export function CipherWorkspace() {
           type="button"
           onClick={() => runTransform("encode")}
           disabled={isActionDisabled}
-          className="inline-flex w-full items-center justify-center rounded-xl bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300 sm:w-auto"
+          className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300 dark:focus-visible:ring-zinc-300 dark:focus-visible:ring-offset-zinc-900 sm:w-auto"
         >
           Codificar
         </button>
@@ -171,7 +171,7 @@ export function CipherWorkspace() {
           type="button"
           onClick={() => runTransform("decode")}
           disabled={isActionDisabled}
-          className="inline-flex w-full items-center justify-center rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-900 transition hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 sm:w-auto"
+          className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-900 transition hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 dark:focus-visible:ring-zinc-300 dark:focus-visible:ring-offset-zinc-900 sm:w-auto"
         >
           Decodificar
         </button>
